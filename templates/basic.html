@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}" />
+  <title>Basic Calculator</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Basic Calculator</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/basic">Basic Calculator</a></li>
+          <li><a href="/scientific">Scientific Calculator</a></li>
+          <li><a href="/area">Area Calculator</a></li>
+          <li><a href="/converter">Unit Converter</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="calculator-main">
+      <div class="calculator">
+        <div class="display-container">
+          <input type="text" id="display" readonly placeholder="0">
+        </div>
+        
+        <div class="calpad">
+          <button class="btn-clear" onclick="clearDisplay()">C</button>
+          <button class="btn-operator" onclick="appendToDisplay('/')">/</button>
+          <button class="btn-operator" onclick="appendToDisplay('*')">×</button>
+          <button class="btn-backspace" onclick="backspace()">⌫</button>
+          
+          <button class="btn-number" onclick="appendToDisplay('7')">7</button>
+          <button class="btn-number" onclick="appendToDisplay('8')">8</button>
+          <button class="btn-number" onclick="appendToDisplay('9')">9</button>
+          <button class="btn-operator" onclick="appendToDisplay('-')">-</button>
+          
+          <button class="btn-number" onclick="appendToDisplay('4')">4</button>
+          <button class="btn-number" onclick="appendToDisplay('5')">5</button>
+          <button class="btn-number" onclick="appendToDisplay('6')">6</button>
+          <button class="btn-operator" onclick="appendToDisplay('+')">+</button>
+          
+          <button class="btn-number" onclick="appendToDisplay('1')">1</button>
+          <button class="btn-number" onclick="appendToDisplay('2')">2</button>
+          <button class="btn-number" onclick="appendToDisplay('3')">3</button>
+          <button class="btn-equals" onclick="calculate()" rowspan="2">=</button>
+          
+          <button class="btn-number btn-zero" onclick="appendToDisplay('0')">0</button>
+          <button class="btn-number" onclick="appendToDisplay('.')">.</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentInput = '';
+    let display = document.getElementById('display');
+
+    function appendToDisplay(value) {
+      currentInput += value;
+      display.value = currentInput;
+    }
+
+    function clearDisplay() {
+      currentInput = '';
+      display.value = '';
+    }
+
+    function backspace() {
+      currentInput = currentInput.slice(0, -1);
+      display.value = currentInput;
+    }
+
+    async function calculate() {
+      if (currentInput === '') return;
+      
+      try {
+        const response = await fetch("/calculate", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ expression: currentInput })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          display.value = "Error: " + data.error;
+        } else {
+          display.value = data.result;
+          currentInput = data.result.toString();
+        }
+      } catch (error) {
+        display.value = "Error: " + error.message;
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      
+      if (key >= '0' && key <= '9' || key === '.') {
+        appendToDisplay(key);
+      } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+        appendToDisplay(key);
+      } else if (key === 'Enter' || key === '=') {
+        calculate();
+      } else if (key === 'Escape' || key === 'c' || key === 'C') {
+        clearDisplay();
+      } else if (key === 'Backspace') {
+        backspace();
+      }
+    });
+  </script>
+</body>
+</html>
+

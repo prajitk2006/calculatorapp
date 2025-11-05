@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}" />
+  <title>Unit Converter</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Unit Converter</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/basic">Basic Calculator</a></li>
+          <li><a href="/scientific">Scientific Calculator</a></li>
+          <li><a href="/area">Area Calculator</a></li>
+          <li><a href="/converter">Unit Converter</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="calculator-main">
+      <div class="unit-converter">
+        <div class="converter-type-selector">
+          <h2>Select Conversion Type</h2>
+          <div class="type-buttons">
+            <button class="type-btn active" data-type="length">Length</button>
+            <button class="type-btn" data-type="area">Area</button>
+            <button class="type-btn" data-type="weight">Weight</button>
+          </div>
+        </div>
+
+        <div class="converter-form">
+          <div class="conversion-section" id="length-section">
+            <h3>Length Conversion</h3>
+            <div class="conversion-inputs">
+              <div class="input-group">
+                <label for="lengthValue">Value:</label>
+                <input type="number" id="lengthValue" step="0.01" placeholder="Enter value">
+              </div>
+              <div class="input-group">
+                <label for="lengthFrom">From:</label>
+                <select id="lengthFrom">
+                  <option value="mm">Millimeter (mm)</option>
+                  <option value="cm">Centimeter (cm)</option>
+                  <option value="m" selected>Meter (m)</option>
+                  <option value="km">Kilometer (km)</option>
+                  <option value="in">Inch (in)</option>
+                  <option value="ft">Foot (ft)</option>
+                  <option value="yd">Yard (yd)</option>
+                  <option value="mi">Mile (mi)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="lengthTo">To:</label>
+                <select id="lengthTo">
+                  <option value="mm">Millimeter (mm)</option>
+                  <option value="cm">Centimeter (cm)</option>
+                  <option value="m">Meter (m)</option>
+                  <option value="km">Kilometer (km)</option>
+                  <option value="in">Inch (in)</option>
+                  <option value="ft" selected>Foot (ft)</option>
+                  <option value="yd">Yard (yd)</option>
+                  <option value="mi">Mile (mi)</option>
+                </select>
+              </div>
+              <button class="btn-convert" onclick="convertUnit('length')">Convert</button>
+            </div>
+          </div>
+
+          <div class="conversion-section" id="area-section" style="display: none;">
+            <h3>Area Conversion</h3>
+            <div class="conversion-inputs">
+              <div class="input-group">
+                <label for="areaValue">Value:</label>
+                <input type="number" id="areaValue" step="0.01" placeholder="Enter value">
+              </div>
+              <div class="input-group">
+                <label for="areaFrom">From:</label>
+                <select id="areaFrom">
+                  <option value="mm²">Square Millimeter (mm²)</option>
+                  <option value="cm²">Square Centimeter (cm²)</option>
+                  <option value="m²" selected>Square Meter (m²)</option>
+                  <option value="km²">Square Kilometer (km²)</option>
+                  <option value="in²">Square Inch (in²)</option>
+                  <option value="ft²">Square Foot (ft²)</option>
+                  <option value="yd²">Square Yard (yd²)</option>
+                  <option value="ac">Acre (ac)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="areaTo">To:</label>
+                <select id="areaTo">
+                  <option value="mm²">Square Millimeter (mm²)</option>
+                  <option value="cm²">Square Centimeter (cm²)</option>
+                  <option value="m²">Square Meter (m²)</option>
+                  <option value="km²">Square Kilometer (km²)</option>
+                  <option value="in²">Square Inch (in²)</option>
+                  <option value="ft²" selected>Square Foot (ft²)</option>
+                  <option value="yd²">Square Yard (yd²)</option>
+                  <option value="ac">Acre (ac)</option>
+                </select>
+              </div>
+              <button class="btn-convert" onclick="convertUnit('area')">Convert</button>
+            </div>
+          </div>
+
+          <div class="conversion-section" id="weight-section" style="display: none;">
+            <h3>Weight Conversion</h3>
+            <div class="conversion-inputs">
+              <div class="input-group">
+                <label for="weightValue">Value:</label>
+                <input type="number" id="weightValue" step="0.01" placeholder="Enter value">
+              </div>
+              <div class="input-group">
+                <label for="weightFrom">From:</label>
+                <select id="weightFrom">
+                  <option value="mg">Milligram (mg)</option>
+                  <option value="g" selected>Gram (g)</option>
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="lb">Pound (lb)</option>
+                  <option value="oz">Ounce (oz)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="weightTo">To:</label>
+                <select id="weightTo">
+                  <option value="mg">Milligram (mg)</option>
+                  <option value="g">Gram (g)</option>
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="lb" selected>Pound (lb)</option>
+                  <option value="oz">Ounce (oz)</option>
+                </select>
+              </div>
+              <button class="btn-convert" onclick="convertUnit('weight')">Convert</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>Result</h3>
+          <div class="result-display" id="conversionResult">
+            <p>Select a conversion type and enter values to convert.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentType = 'length';
+
+    // Type selection
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Hide all sections
+        document.querySelectorAll('.conversion-section').forEach(section => {
+          section.style.display = 'none';
+        });
+        
+        // Show selected section
+        currentType = this.dataset.type;
+        document.getElementById(currentType + '-section').style.display = 'block';
+        
+        // Clear result
+        document.getElementById('conversionResult').innerHTML = '<p>Enter values to convert.</p>';
+      });
+    });
+
+    async function convertUnit(type) {
+      let value, fromUnit, toUnit;
+      
+      try {
+        if (type === 'length') {
+          value = parseFloat(document.getElementById('lengthValue').value);
+          fromUnit = document.getElementById('lengthFrom').value;
+          toUnit = document.getElementById('lengthTo').value;
+        } else if (type === 'area') {
+          value = parseFloat(document.getElementById('areaValue').value);
+          fromUnit = document.getElementById('areaFrom').value;
+          toUnit = document.getElementById('areaTo').value;
+        } else if (type === 'weight') {
+          value = parseFloat(document.getElementById('weightValue').value);
+          fromUnit = document.getElementById('weightFrom').value;
+          toUnit = document.getElementById('weightTo').value;
+        }
+
+        if (isNaN(value)) {
+          throw new Error('Please enter a valid number.');
+        }
+
+        const response = await fetch("/convert_unit", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ 
+            value: value,
+            from_unit: fromUnit,
+            to_unit: toUnit,
+            unit_type: type
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          document.getElementById('conversionResult').innerHTML = 
+            `<p class="error">Error: ${data.error}</p>`;
+        } else {
+          document.getElementById('conversionResult').innerHTML = 
+            `<p class="success">${value} ${fromUnit} = ${data.result.toFixed(6)} ${toUnit}</p>`;
+        }
+      } catch (error) {
+        document.getElementById('conversionResult').innerHTML = 
+          `<p class="error">Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
+

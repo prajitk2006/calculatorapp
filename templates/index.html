@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}" />
+  <title>Calculator</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Calculator</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/basic">Basic Calculator</a></li>
+          <li><a href="/scientific">Scientific Calculator</a></li>
+          <li><a href="/area">Area Calculator</a></li>
+          <li><a href="/converter">Unit Converter</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="home-content">
+      <div class="welcome-section">
+        <h2>Calculator. Redesigned.</h2>
+        <p>Beautiful, powerful calculators that work seamlessly across all your devices. From basic arithmetic to advanced scientific functions, everything you need in one elegant suite.</p>
+      </div>
+
+      <div class="calculator-grid">
+        <div class="calculator-card">
+          <h3>Basic Calculator</h3>
+          <p>Clean, intuitive interface for everyday calculations. Addition, subtraction, multiplication, and division made simple.</p>
+          <a href="/basic" class="btn">Try Basic Calculator</a>
+        </div>
+
+        <div class="calculator-card">
+          <h3>Scientific Calculator</h3>
+          <p>Advanced mathematical functions at your fingertips. Trigonometry, logarithms, constants, and more.</p>
+          <a href="/scientific" class="btn">Try Scientific Calculator</a>
+        </div>
+
+        <div class="calculator-card">
+          <h3>Area Calculator</h3>
+          <p>Calculate areas effortlessly. Support for rectangles, circles, triangles, and squares with instant results.</p>
+          <a href="/area" class="btn">Try Area Calculator</a>
+        </div>
+
+        <div class="calculator-card">
+          <h3>Unit Converter</h3>
+          <p>Convert between units seamlessly. Length, area, weight, and more with precision and ease.</p>
+          <a href="/converter" class="btn">Try Unit Converter</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Calculator Suite. Designed with precision.</p>
+    </footer>
+  </div>
+</body>
+</html>

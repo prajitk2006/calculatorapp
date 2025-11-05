@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}" />
+  <title>Scientific Calculator</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Scientific Calculator</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/basic">Basic Calculator</a></li>
+          <li><a href="/scientific">Scientific Calculator</a></li>
+          <li><a href="/area">Area Calculator</a></li>
+          <li><a href="/converter">Unit Converter</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="calculator-main">
+      <div class="calculator scientific-calc">
+        <div class="display-container">
+          <input type="text" id="display" readonly placeholder="0">
+        </div>
+        
+        <div class="calpad scientific-pad">
+          <!-- Row 1 -->
+          <button class="btn-function" onclick="appendToDisplay('sin(')">sin</button>
+          <button class="btn-function" onclick="appendToDisplay('cos(')">cos</button>
+          <button class="btn-function" onclick="appendToDisplay('tan(')">tan</button>
+          <button class="btn-function" onclick="appendToDisplay('log(')">log</button>
+          <button class="btn-clear" onclick="clearDisplay()">C</button>
+          
+          <!-- Row 2 -->
+          <button class="btn-function" onclick="appendToDisplay('sqrt(')">√</button>
+          <button class="btn-function" onclick="appendToDisplay('(')">(</button>
+          <button class="btn-function" onclick="appendToDisplay(')')">)</button>
+          <button class="btn-function" onclick="appendToDisplay('pi')">π</button>
+          <button class="btn-function" onclick="appendToDisplay('e')">e</button>
+          
+          <!-- Row 3 -->
+          <button class="btn-number" onclick="appendToDisplay('7')">7</button>
+          <button class="btn-number" onclick="appendToDisplay('8')">8</button>
+          <button class="btn-number" onclick="appendToDisplay('9')">9</button>
+          <button class="btn-operator" onclick="appendToDisplay('/')">/</button>
+          <button class="btn-function" onclick="appendToDisplay('^')">^</button>
+          
+          <!-- Row 4 -->
+          <button class="btn-number" onclick="appendToDisplay('4')">4</button>
+          <button class="btn-number" onclick="appendToDisplay('5')">5</button>
+          <button class="btn-number" onclick="appendToDisplay('6')">6</button>
+          <button class="btn-operator" onclick="appendToDisplay('*')">×</button>
+          <button class="btn-function" onclick="appendToDisplay('!')">!</button>
+          
+          <!-- Row 5 -->
+          <button class="btn-number" onclick="appendToDisplay('1')">1</button>
+          <button class="btn-number" onclick="appendToDisplay('2')">2</button>
+          <button class="btn-number" onclick="appendToDisplay('3')">3</button>
+          <button class="btn-operator" onclick="appendToDisplay('-')">-</button>
+          <button class="btn-backspace" onclick="backspace()">⌫</button>
+          
+          <!-- Row 6 -->
+          <button class="btn-number" onclick="appendToDisplay('0')">0</button>
+          <button class="btn-number" onclick="appendToDisplay('.')">.</button>
+          <button class="btn-operator" onclick="appendToDisplay('+')">+</button>
+          <button class="btn-equals" onclick="calculate()">=</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentInput = '';
+    let display = document.getElementById('display');
+
+    function appendToDisplay(value) {
+      currentInput += value;
+      display.value = currentInput;
+    }
+
+    function clearDisplay() {
+      currentInput = '';
+      display.value = '';
+    }
+
+    function backspace() {
+      currentInput = currentInput.slice(0, -1);
+      display.value = currentInput;
+    }
+
+    function factorial(n) {
+      if (n < 0) return NaN;
+      if (n === 0 || n === 1) return 1;
+      let result = 1;
+      for (let i = 2; i <= n; i++) {
+        result *= i;
+      }
+      return result;
+    }
+
+    async function calculate() {
+      if (currentInput === '') return;
+      
+      try {
+        // Replace ^ with ** for exponentiation
+        let expression = currentInput.replace(/\^/g, '**');
+        
+        // Handle factorial
+        expression = expression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
+        
+        const response = await fetch("/calculate_scientific", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ expression: expression })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          display.value = "Error: " + data.error;
+        } else {
+          display.value = data.result;
+          currentInput = data.result.toString();
+        }
+      } catch (error) {
+        display.value = "Error: " + error.message;
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      
+      if (key >= '0' && key <= '9' || key === '.') {
+        appendToDisplay(key);
+      } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+        appendToDisplay(key);
+      } else if (key === 'Enter' || key === '=') {
+        calculate();
+      } else if (key === 'Escape' || key === 'c' || key === 'C') {
+        clearDisplay();
+      } else if (key === 'Backspace') {
+        backspace();
+      } else if (key === '(' || key === ')') {
+        appendToDisplay(key);
+      }
+    });
+  </script>
+</body>
+</html>
+
